@@ -1,0 +1,48 @@
+[package]
+name = "mac_oui"
+version = "0.1.0"
+description = "Lookup for MAC Address vendor details"
+authors = ["Marirs <marirs@gmail.com>"]
+keywords = [
+    "eui48", "oui", "mac address", "lookup"
+]
+include = [
+    "assets",
+]
+exclude = [
+    ".travis.yml",
+    ".gitignore",
+    "examples"
+]
+readme = "README.md"
+license-file = "LICENSE"
+repository = "https://github.com/marirs/mac-oui"
+homepage = "https://github.com/marirs/mac-oui"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+byteorder = "1"
+csv = "1"
+eui48 = "1"
+rayon = "1"
+serde = { version = "1", features = ["derive"] }
+serde_derive = "1"
+
+[lib]
+name = "mac_oui"
+path = "src/lib.rs"
+
+[badges]
+travis-ci = { repository = "marirs/mac-oui" }
+
+[profile.dev]
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
+debug-assertions = false
+debug = false
+opt-level = 3
+lto = true
