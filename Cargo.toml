@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Lookup for MAC Address vendor details"
 authors = ["Marirs <marirs@gmail.com>"]
 keywords = [
-    "eui48", "oui", "mac address", "lookup"
+    "eui48", "oui", "mac", "address", "lookup"
 ]
 include = [
     "assets",
