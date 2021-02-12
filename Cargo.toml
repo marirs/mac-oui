@@ -8,6 +8,7 @@ keywords = [
 ]
 include = [
     "assets",
+    "src"
 ]
 exclude = [
     ".travis.yml",
