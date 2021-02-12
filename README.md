@@ -1,5 +1,6 @@
 MAC Address lookup tool
 =========================
+[![Build Status](https://travis-ci.com/marirs/mac-oui.svg?branch=master)](https://travis-ci.com/marirs/mac-oui)
 
 Lookup the MAC Address for a corresponding details (eg: org, created, etc...)
 
