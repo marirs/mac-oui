@@ -10,7 +10,7 @@ fn main() {
         println!("pass a mac address string for lookup");
         exit(1);
     }
-    let mac_addr = args[1].clone();
+    let manuf = args[1].clone();
 
     let oui_db = match Oui::default() {
         Ok(s) => s,
@@ -19,13 +19,13 @@ fn main() {
             exit(1)
         }
     };
-    let res = oui_db.lookup_by_mac(&mac_addr);
+    let res = oui_db.lookup_by_manufacturer(&manuf);
     match res {
         Ok(r) => {
             if let Some(rec) = r {
                 println!("{:#?}", &rec)
             } else {
-                println!("No entry found for: {}", mac_addr)
+                println!("No entry found for: {}", manuf)
             }
         },
         Err(e) => println!("Error: {}", e)

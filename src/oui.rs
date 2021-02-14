@@ -1,7 +1,8 @@
 use std::{
     fs::read_to_string,
+    collections::HashSet,
     path::Path,
-    collections::BTreeMap,
+    iter::FromIterator,
 };
 use serde::{Serialize, Deserialize, Deserializer};
 use byteorder::{NetworkEndian, ReadBytesExt};
@@ -9,11 +10,11 @@ use eui48::MacAddress;
 use csv;
 
 type Start = u64;
-type End = u64;
-type OuiMap = BTreeMap<(Start, End), Entry>;
+type OuiMap = rangemap::RangeInclusiveMap<Start, Entry>;
+type OuiMultiMap = multimap::MultiMap<String, Entry>;
 type Error = String;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
 #[serde(rename_all(deserialize = "camelCase"))]
 pub struct Entry {
     /// Organization Unique Identifier
@@ -47,10 +48,15 @@ fn string_to_bool<'de, D>(deserializer: D) -> Result<bool, D::Error>
         "1" => Ok(true),
         _ => Ok(false),
     }
+
 }
 
 pub struct Oui {
-    db: OuiMap
+    db: OuiMap,
+    manufacturer_map: OuiMultiMap,
+    manufacturers: HashSet<String>,
+    ouis: HashSet<String>,
+    records: i32,
 }
 
 impl Oui {
@@ -75,7 +81,13 @@ impl Oui {
 
         let oui_entry = read_into_db(db_text);
         match oui_entry {
-            Ok(e) => { Ok(Oui { db: e }) }
+            Ok(e) => { Ok(Oui {
+                db: e.0,
+                manufacturer_map: e.1,
+                manufacturers: e.2,
+                ouis: e.3,
+                records: e.4,
+            }) }
             Err(e) => Err(format!("Error: {}", e))
         }
     }
@@ -108,91 +120,97 @@ impl Oui {
         match oui_entry {
             Ok(e) => {
                 Ok(Oui {
-                    db: e
+                    db: e.0,
+                    manufacturer_map: e.1,
+                    manufacturers: e.2,
+                    ouis: e.3,
+                    records: e.4,
                 })
             }
             Err(e) => Err(format!("Error: {}", e))
         }
     }
 
-    pub fn lookup(&self, mac_addr: &str) -> Result<Option<Entry>, Error> {
-        //! Lookup for a mac address in the OUI Database and
-        //! return an Entry Result.
-        //!
-        //! ## Example
-        //! ```rust
-        //! use mac_oui::Oui;
-        //!
-        //! fn main() {
-        //!     let db = Oui::default().unwrap();
-        //!     let res = db.lookup("70:B3:D5:27:4f:81");
-        //!     assert!(res.is_ok());
-        //!
-        //!     println!("{:#?}", res.unwrap());
-        //! }
-        //! ```
+    pub fn lookup_by_mac(&self, mac_addr: &str) -> Result<Option<&Entry>, Error> {
+        //! Lookup for a Manufacturer Name based upon
+        //! the given MAC Address
         let mac_addr = match MacAddress::parse_str(&mac_addr) {
             Ok(m) => m,
             Err(e) => return Err(e.to_string())
         };
-        let mac_u = mac_addr_to_u64(&mac_addr);
+        let mac_u = &mac_addr.to_u64();
         match mac_u {
             Ok(m) => self.query(&m),
             Err(e) => return Err(e.to_string())
         }
     }
 
+    pub fn lookup_by_manufacturer(&self, manufacturer_name: &str) -> Result<Option<&Vec<Entry>>, Error> {
+        //! Lookup for the MAC Address Reference based
+        //! upon the given Manufacturer Name
+        match self.manufacturer_map.get_vec(&manufacturer_name.to_string()) {
+            Some(r) => Ok(Some(r)),
+            _ => Ok(None),
+        }
+    }
+
+    pub fn get_unique_manufacturers(&self) -> Result<Vec<String>, Error> {
+        //! Get a list of Manufacturers present in the database
+        Ok(Vec::from_iter(self.manufacturers.clone()))
+    }
+
+    pub fn get_unique_ouis(&self) -> Result<Vec<String>, Error> {
+        //! Get a list of MAC OUI references present in the database
+        Ok(Vec::from_iter(self.ouis.clone()))
+    }
+
+    pub fn get_total_records(&self) -> i32 {
+        //! Get total records in the database
+        self.records
+    }
+
     /// Queries the database using a u64 representation from the wrapper query functions
-    fn query(&self, query: &u64) -> Result<Option<Entry>, Error> {
-       let mut results = Vec::<((u64, u64), Entry)>::new();
-
-        for ((s, e), value) in &self.db {
-            if query >= s && query <= e {
-                results.push(((*s, *e), value.clone()));
-            }
-        }
-
-        if results.len() > 2 {
-            return Err(format!(
-                "more than two oui matches - possible database error",
-            ));
-        }
-        // Get the last value from the search,
-        // and return it
-        match results.pop() {
-            Some(r) => Ok(Some(r.1)),
+    fn query(&self, query: &u64) -> Result<Option<&Entry>, Error> {
+        match self.db.get(query) {
+            Some(r) => Ok(Some(r)),
             _ => Ok(None),
         }
     }
 }
 
-fn mac_addr_to_u64(mac: &MacAddress) -> Result<u64, Error> {
-    //! Converts a MAC Address to a u64 value
-    let mac_bytes = mac.as_bytes();
+trait MacAddrToU64 {
+    fn to_u64(&self)  -> Result<u64, Error>;
+}
 
-    let padded = vec![
-        0,
-        0,
-        mac_bytes[0],
-        mac_bytes[1],
-        mac_bytes[2],
-        mac_bytes[3],
-        mac_bytes[4],
-        mac_bytes[5],
-    ];
+impl MacAddrToU64 for MacAddress {
+    fn to_u64(&self) -> Result<u64, Error> {
+        //! Converts a MAC Address to a u64 value
+        let mac_bytes = self.as_bytes();
 
-    let mut padded_mac = &padded[..8];
-    let mac_num = if let Ok(padded) = padded_mac.read_u64::<NetworkEndian>() {
-        padded
-    } else {
-        return Err(
-            format!(
-                "could not read_u64 from padded MAC byte array: {:?}",
-                padded_mac
+        let padded = vec![
+            0,
+            0,
+            mac_bytes[0],
+            mac_bytes[1],
+            mac_bytes[2],
+            mac_bytes[3],
+            mac_bytes[4],
+            mac_bytes[5],
+        ];
+
+        let mut padded_mac = &padded[..8];
+        let mac_num = if let Ok(padded) = padded_mac.read_u64::<NetworkEndian>() {
+            padded
+        } else {
+            return Err(
+                format!(
+                    "could not read_u64 from padded MAC byte array: {:?}",
+                    padded_mac
+                )
             )
-        )
-    };
-    Ok(mac_num)
+        };
+        Ok(mac_num)
+    }
 }
 
 fn csv_de(csv_text: &str) -> Result<Vec<Entry>, csv::Error> {
@@ -201,9 +219,13 @@ fn csv_de(csv_text: &str) -> Result<Vec<Entry>, csv::Error> {
         .collect()
 }
 
-fn read_into_db(csv_text: &str) -> Result<OuiMap, Error> {
+fn read_into_db(csv_text: &str) -> Result<(OuiMap, OuiMultiMap, HashSet<String>, HashSet<String>, i32), Error> {
     //! Reads the OUI CSV File into a Btree Map
-    let mut mac_oui_db = OuiMap::new();
+    let mut oui_db = OuiMap::new();
+    let mut manufacturer_map = OuiMultiMap::new();
+    let mut unique_manufacturers = HashSet::<String>::new();
+    let mut unique_ouis = HashSet::<String>::new();
+    let mut nr_records = 0;
 
     let records = match csv_de(csv_text) {
         Ok(r) => r,
@@ -213,7 +235,7 @@ fn read_into_db(csv_text: &str) -> Result<OuiMap, Error> {
         )
     };
 
-    // loop thru
+    // Loop thru
     for record in records {
         // Get the mask if any
         let mask: u8;
@@ -260,19 +282,23 @@ fn read_into_db(csv_text: &str) -> Result<OuiMap, Error> {
 
         // Add to the database
         let data = Entry {
-            oui: record.oui,
+            oui: record.oui.clone(),
             is_private: record.is_private,
-            company_name: record.company_name,
+            company_name: record.company_name.clone(),
             company_address: record.company_address,
             country_code: record.country_code,
             assignment_block_size: record.assignment_block_size,
             date_created: record.date_created,
             date_updated: record.date_updated
         };
-        mac_oui_db.insert((oui_start, oui_end), data);
+        nr_records += 1;
+        oui_db.insert(oui_start..=oui_end, data.clone());
+        manufacturer_map.insert(record.company_name.clone(), data);
+        unique_manufacturers.insert(record.company_name);
+        unique_ouis.insert(record.oui);
     }
 
-    Ok(mac_oui_db)
+    Ok((oui_db, manufacturer_map, unique_manufacturers, unique_ouis, nr_records))
 }
 
 #[cfg(test)]
@@ -295,7 +321,47 @@ mod tests {
     fn test_lookup() {
         let db = Oui::default().unwrap();
 
-        let res = db.lookup("70:B3:D5:e7:4f:81").unwrap();
+        let res = db.lookup_by_mac("70:B3:D5:e7:4f:81").unwrap();
         assert_eq!(res.unwrap().company_name, "Ieee Registration Authority")
+    }
+
+    #[test]
+    fn test_get_by_manufacturer() {
+        let db = Oui::default().unwrap();
+
+        match db.lookup_by_manufacturer("Ieee Registration Authority") {
+            Ok(m) => match m {
+                Some(entries) => {
+                    let ouis: Vec<String> = entries.iter().map(|e| e.oui.clone()).rev().collect();
+                    return assert!(ouis.contains(&"70:B3:D5".to_string()));
+                },
+                _ => assert!(false),
+            },
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn test_get_unique_manufacturers() {
+        let db = Oui::default().unwrap();
+
+        let res = db.get_unique_manufacturers().unwrap();
+        assert_eq!(res.len(), 27379)
+    }
+
+    #[test]
+    fn test_get_unique_ouis() {
+        let db = Oui::default().unwrap();
+
+        let res = db.get_unique_ouis().unwrap();
+        assert_eq!(res.len(), 41917)
+    }
+
+    #[test]
+    fn test_get_records() {
+        let db = Oui::default().unwrap();
+
+        let res = db.get_total_records();
+        assert_eq!(res, 41917)
     }
 }
