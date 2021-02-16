@@ -39,6 +39,9 @@ path = "src/lib.rs"
 [features]
 with-db = []
 
+[package.metadata.docs.rs]
+all-features = true
+
 [badges]
 travis-ci = { repository = "marirs/mac-oui" }
 
