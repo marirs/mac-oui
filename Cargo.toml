@@ -1,6 +1,6 @@
 [package]
 name = "mac_oui"
-version = "0.2.0"
+version = "0.3.0"
 description = "Lookup for MAC Address vendor details"
 authors = ["Marirs <marirs@gmail.com>"]
 keywords = [
@@ -36,6 +36,9 @@ serde_derive = "1"
 name = "mac_oui"
 path = "src/lib.rs"
 
+[features]
+with-db = []
+
 [badges]
 travis-ci = { repository = "marirs/mac-oui" }
 
@@ -48,3 +51,18 @@ debug-assertions = false
 debug = false
 opt-level = 3
 lto = true
+
+[[example]]
+name = "mac_lookup"
+path= "examples/mac_lookup.rs"
+required-features = ["with-db"]
+
+[[example]]
+name = "manufacturer_lookup"
+path= "examples/manufacturer_lookup.rs"
+required-features = ["with-db"]
+
+[[example]]
+name = "db_stats"
+path= "examples/db_stats.rs"
+required-features = ["with-db"]

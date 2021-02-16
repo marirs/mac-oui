@@ -11,3 +11,5 @@ matrix:
 script:
   - cargo build --verbose
   - cargo test --verbose
+  - cargo build --verbose --features "with-db"
+  - cargo test --verbose --features "with-db"

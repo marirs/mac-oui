@@ -25,14 +25,31 @@ cargo b --release
 You can include this in your Cargo.toml file:
 ```toml
 [dependencies]
-mac_oui = "0.2.0"
+mac_oui = "0.3.0"
+```
+
+If you want to use it with the inbuilt oui db; then:
+```toml
+[dependencies]
+mac_oui = { version = "0.3.0", features = ["with-db"] }
+```
+
+and then
+
+```rust
+use mac_oui::Oui;
+
+fn main () {
+    let oui_db = Oui::default();
+    assert!(oui_db.is_ok());
+}
 ```
 
 ## Running the Example
 You can run the default example that is included in the following manner.
 - `cargo run --example mac_lookup <mac address>` eg:
 ```bash
-cargo run --example mac_lookup 70:B3:D5:e7:4f:81
+cargo run --example mac_lookup --features="with-db" 70:B3:D5:e7:4f:81
    Compiling mac_oui v0.1.0 (/Users/sgp/Documents/DEV/Repos/macaddr-rs)
     Finished dev [optimized + debuginfo] target(s) in 1.54s
      Running `target/debug/examples/mac_lookup '70:B3:D5:e7:4f:81'`
@@ -49,7 +66,7 @@ Entry {
 ```
 - Example of lookup by Manufacturer
 ```bash
-$ cargo run --example manufacturer_lookup "Apple, Inc"
+$ cargo run --example manufacturer_lookup --features="with-db" "Apple, Inc"
     Finished dev [optimized + debuginfo] target(s) in 0.02s
      Running `target/debug/examples/manufacturer_lookup 'Apple, Inc'`
 [
@@ -69,7 +86,7 @@ $ cargo run --example manufacturer_lookup "Apple, Inc"
 
 - Example Getting a list of Manufacturers
 ```bash
-$ cargo run --example db_stats
+$ cargo run --example --features="with-db" db_stats
     Finished dev [optimized + debuginfo] target(s) in 0.06s
      Running `target/debug/examples/db_stats`
 Total Records= 41917

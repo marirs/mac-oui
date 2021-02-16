@@ -60,6 +60,7 @@ pub struct Oui {
 }
 
 impl Oui {
+    #[cfg(feature = "with-db")]
     pub fn default() -> Result<Oui, Error> {
         //! Loads the default oui csv database
         //!
@@ -305,6 +306,7 @@ fn read_into_db(csv_text: &str) -> Result<(OuiMap, OuiMultiMap, HashSet<String>,
 mod tests {
     use super::*;
 
+    #[cfg(feature = "with-db")]
     #[test]
     fn test_default_database() {
         let db = Oui::default();
@@ -319,7 +321,7 @@ mod tests {
 
     #[test]
     fn test_lookup() {
-        let db = Oui::default().unwrap();
+        let db = Oui::from_csv_file("assets/oui.csv").unwrap();
 
         let res = db.lookup_by_mac("70:B3:D5:e7:4f:81").unwrap();
         assert_eq!(res.unwrap().company_name, "Ieee Registration Authority")
@@ -327,7 +329,7 @@ mod tests {
 
     #[test]
     fn test_get_by_manufacturer() {
-        let db = Oui::default().unwrap();
+        let db = Oui::from_csv_file("assets/oui.csv").unwrap();
 
         match db.lookup_by_manufacturer("Ieee Registration Authority") {
             Ok(m) => match m {
@@ -343,7 +345,7 @@ mod tests {
 
     #[test]
     fn test_get_unique_manufacturers() {
-        let db = Oui::default().unwrap();
+        let db = Oui::from_csv_file("assets/oui.csv").unwrap();
 
         let res = db.get_unique_manufacturers().unwrap();
         assert_eq!(res.len(), 27379)
@@ -351,7 +353,7 @@ mod tests {
 
     #[test]
     fn test_get_unique_ouis() {
-        let db = Oui::default().unwrap();
+        let db = Oui::from_csv_file("assets/oui.csv").unwrap();
 
         let res = db.get_unique_ouis().unwrap();
         assert_eq!(res.len(), 41917)
@@ -359,7 +361,7 @@ mod tests {
 
     #[test]
     fn test_get_records() {
-        let db = Oui::default().unwrap();
+        let db = Oui::from_csv_file("assets/oui.csv").unwrap();
 
         let res = db.get_total_records();
         assert_eq!(res, 41917)
