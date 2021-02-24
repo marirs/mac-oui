@@ -73,11 +73,6 @@ impl Oui {
         //!     assert!(db.is_ok());
         //! }
         //! ```
-        if !Path::new("assets/oui.csv").exists() {
-            return Err(
-                format!("Internal DB not found.")
-            )
-        }
         let db_text = include_str!("../assets/oui.csv");
 
         let oui_entry = read_into_db(db_text);
