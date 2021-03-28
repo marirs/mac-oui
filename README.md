@@ -25,13 +25,13 @@ cargo b --release
 You can include this in your Cargo.toml file:
 ```toml
 [dependencies]
-mac_oui = "0.3.1"
+mac_oui = "0.3.2"
 ```
 
 If you want to use it with the inbuilt oui db; then:
 ```toml
 [dependencies]
-mac_oui = { version = "0.3.1", features = ["with-db"] }
+mac_oui = { version = "0.3.2", features = ["with-db"] }
 ```
 
 and then
@@ -50,7 +50,7 @@ You can run the default example that is included in the following manner.
 - `cargo run --example mac_lookup <mac address>` eg:
 ```bash
 cargo run --example mac_lookup --features="with-db" 70:B3:D5:e7:4f:81
-   Compiling mac_oui v0.1.0 (/Users/sgp/Documents/DEV/Repos/macaddr-rs)
+   Compiling mac_oui v0.3.2 (macaddr-rs)
     Finished dev [optimized + debuginfo] target(s) in 1.54s
      Running `target/debug/examples/mac_lookup '70:B3:D5:e7:4f:81'`
 Entry {
