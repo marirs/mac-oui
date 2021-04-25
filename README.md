@@ -25,7 +25,7 @@ cargo b --release
 You can include this in your Cargo.toml file:
 ```toml
 [dependencies]
-mac_oui = "0.3.2"
+mac_oui = "0.3.3"
 ```
 
 If you want to use it with the inbuilt oui db; then:
@@ -89,9 +89,9 @@ $ cargo run --example manufacturer_lookup --features="with-db" "Apple, Inc"
 $ cargo run --example --features="with-db" db_stats
     Finished dev [optimized + debuginfo] target(s) in 0.06s
      Running `target/debug/examples/db_stats`
-Total Records= 41917
-Total Manufacturers= 27379
-Total MAC Addrs= 41917
+Total Records= 42554
+Total Manufacturers= 27617
+Total MAC Addrs= 42554
 
 ====Manufacturers====
 [
@@ -106,6 +106,7 @@ Total MAC Addrs= 41917
     "1000eyes GmbH",
     "100fio networks Tech Llc",
     "10net Communications/Dca",
+    "11811347 Canada Inc",
     "11wave Technonlogy Co, Ltd",
     "12Sided Tech, Llc",
     "1394 Printer Working Group",
@@ -114,7 +115,6 @@ Total MAC Addrs= 41917
     "1Net Corp",
     "1Verge Internet Tech (Beijing) Co, Ltd",
     "1more",
-    "2 France Marine",
 ]
 ...
 [
@@ -126,6 +126,7 @@ Total MAC Addrs= 41917
     "Åmic AB",
     "µTech Tecnologia Ltda",
     "«Intellect module» Llc",
+    "zxsolution",
     "zte Corp",
     "zhejiang yuanwang communication technolgy Co, Ltd",
     "zhejiang ebang communication Co, Ltd",
@@ -137,7 +138,6 @@ Total MAC Addrs= 41917
     "xmi systems",
     "xm",
     "xiamenshi c-chip Tech Co, Ltd",
-    "xTom GmbH",
 ]
 ```
 ---

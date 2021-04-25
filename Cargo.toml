@@ -1,6 +1,6 @@
 [package]
 name = "mac_oui"
-version = "0.3.2"
+version = "0.3.3"
 description = "Lookup for MAC Address vendor details"
 authors = ["Marirs <marirs@gmail.com>"]
 keywords = [
