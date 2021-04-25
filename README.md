@@ -31,7 +31,7 @@ mac_oui = "0.3.3"
 If you want to use it with the inbuilt oui db; then:
 ```toml
 [dependencies]
-mac_oui = { version = "0.3.2", features = ["with-db"] }
+mac_oui = { version = "0.3.3", features = ["with-db"] }
 ```
 
 and then
