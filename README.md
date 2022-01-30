@@ -1,5 +1,9 @@
 MAC Address lookup tool
 =========================
+[![Linux Arm7](https://github.com/marirs/mac-oui/actions/workflows/linux_arm.yml/badge.svg)](https://github.com/marirs/mac-oui/actions/workflows/linux_arm.yml)
+[![Linux x86_64](https://github.com/marirs/mac-oui/actions/workflows/linux_x86_64.yml/badge.svg)](https://github.com/marirs/mac-oui/actions/workflows/linux_x86_64.yml)
+[![macOS](https://github.com/marirs/mac-oui/actions/workflows/macos.yml/badge.svg)](https://github.com/marirs/mac-oui/actions/workflows/macos.yml)
+[![Windows](https://github.com/marirs/mac-oui/actions/workflows/windows.yml/badge.svg)](https://github.com/marirs/mac-oui/actions/workflows/windows.yml)
 ![Crates.io](https://img.shields.io/crates/v/mac_oui)
 [![Documentation](https://docs.rs/mac_oui/badge.svg)](https://docs.rs/mac_oui)
 
