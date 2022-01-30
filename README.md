@@ -50,7 +50,7 @@ You can run the default example that is included in the following manner.
 - `cargo run --example mac_lookup <mac address>` eg:
 ```bash
 cargo run --example mac_lookup --features="with-db" 70:B3:D5:e7:4f:81
-   Compiling mac_oui v0.1.0 (/Users/sgp/Documents/DEV/Repos/macaddr-rs)
+   Compiling mac_oui v0.3.2 (macaddr-rs)
     Finished dev [optimized + debuginfo] target(s) in 1.54s
      Running `target/debug/examples/mac_lookup '70:B3:D5:e7:4f:81'`
 Entry {
@@ -89,9 +89,9 @@ $ cargo run --example manufacturer_lookup --features="with-db" "Apple, Inc"
 $ cargo run --example --features="with-db" db_stats
     Finished dev [optimized + debuginfo] target(s) in 0.06s
      Running `target/debug/examples/db_stats`
-Total Records= 41917
-Total Manufacturers= 27379
-Total MAC Addrs= 41917
+Total Records= 42554
+Total Manufacturers= 27617
+Total MAC Addrs= 42554
 
 ====Manufacturers====
 [
@@ -106,6 +106,7 @@ Total MAC Addrs= 41917
     "1000eyes GmbH",
     "100fio networks Tech Llc",
     "10net Communications/Dca",
+    "11811347 Canada Inc",
     "11wave Technonlogy Co, Ltd",
     "12Sided Tech, Llc",
     "1394 Printer Working Group",
@@ -114,7 +115,6 @@ Total MAC Addrs= 41917
     "1Net Corp",
     "1Verge Internet Tech (Beijing) Co, Ltd",
     "1more",
-    "2 France Marine",
 ]
 ...
 [
@@ -126,6 +126,7 @@ Total MAC Addrs= 41917
     "Åmic AB",
     "µTech Tecnologia Ltda",
     "«Intellect module» Llc",
+    "zxsolution",
     "zte Corp",
     "zhejiang yuanwang communication technolgy Co, Ltd",
     "zhejiang ebang communication Co, Ltd",
@@ -137,7 +138,6 @@ Total MAC Addrs= 41917
     "xmi systems",
     "xm",
     "xiamenshi c-chip Tech Co, Ltd",
-    "xTom GmbH",
 ]
 ```
 ---

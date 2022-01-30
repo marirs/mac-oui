@@ -25,7 +25,6 @@ eui48 = "1"
 rangemap = "1.0.0"
 multimap = "0.8.3"
 serde = { version = "1", features = ["derive"] }
-#serde_derive = "1"
 
 [lib]
 name = "mac_oui"
@@ -36,16 +35,6 @@ with-db = []
 
 [package.metadata.docs.rs]
 all-features = true
-
-[profile.dev]
-opt-level = 3
-
-[profile.release]
-codegen-units = 1
-debug-assertions = false
-debug = false
-opt-level = 3
-lto = true
 
 [[example]]
 name = "mac_lookup"
@@ -61,3 +50,13 @@ required-features = ["with-db"]
 name = "db_stats"
 path= "examples/db_stats.rs"
 required-features = ["with-db"]
+
+[profile.dev]
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
+debug-assertions = false
+debug = false
+opt-level = 3
+lto = true
