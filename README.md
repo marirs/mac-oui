@@ -2,13 +2,12 @@ MAC Address lookup tool
 =========================
 ![Crates.io](https://img.shields.io/crates/v/mac_oui)
 [![Documentation](https://docs.rs/mac_oui/badge.svg)](https://docs.rs/mac_oui)
-[![Build Status](https://travis-ci.com/marirs/mac-oui.svg?branch=master)](https://travis-ci.com/marirs/mac-oui)
 
 Lookup the MAC Address for a corresponding details (eg: org, created, etc...)
 
 ## Requirements
 
-- Rust
+- Rust 1.56+
 
 ## Compile
 - Dev
