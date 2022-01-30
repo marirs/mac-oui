@@ -1,7 +1,5 @@
 use mac_oui::Oui;
-use std::{
-    process::exit
-};
+use std::process::exit;
 
 fn main() {
     let oui_db = match Oui::default() {
@@ -23,5 +21,8 @@ fn main() {
     println!("====Manufacturers====");
     println!("{:#?}", manufacturers.iter().take(20).collect::<Vec<_>>());
     println!("...");
-    println!("{:#?}", manufacturers.iter().rev().take(20).collect::<Vec<_>>());
+    println!(
+        "{:#?}",
+        manufacturers.iter().rev().take(20).collect::<Vec<_>>()
+    );
 }

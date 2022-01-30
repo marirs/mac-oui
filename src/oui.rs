@@ -1,13 +1,7 @@
-use std::{
-    fs::read_to_string,
-    collections::HashSet,
-    path::Path,
-    iter::FromIterator,
-};
-use serde::{Serialize, Deserialize, Deserializer};
 use byteorder::{NetworkEndian, ReadBytesExt};
 use eui48::MacAddress;
-use csv;
+use serde::{Deserialize, Deserializer, Serialize};
+use std::{collections::HashSet, fs::read_to_string, iter::FromIterator, path::Path};
 
 type Start = u64;
 type OuiMap = rangemap::RangeInclusiveMap<Start, Entry>;
@@ -40,15 +34,14 @@ pub struct Entry {
 }
 
 fn string_to_bool<'de, D>(deserializer: D) -> Result<bool, D::Error>
-    where
-        D: Deserializer<'de>,
+where
+    D: Deserializer<'de>,
 {
     let s: &str = Deserialize::deserialize(deserializer)?;
     match s {
         "1" => Ok(true),
         _ => Ok(false),
     }
-
 }
 
 pub struct Oui {
@@ -68,23 +61,21 @@ impl Oui {
         //! ```rust
         //! use mac_oui::Oui;
         //!
-        //! fn main() {
-        //!     let db = Oui::default();
-        //!     assert!(db.is_ok());
-        //! }
+        //! let db = Oui::default();
+        //! assert!(db.is_ok());
         //! ```
         let db_text = include_str!("../assets/oui.csv");
 
         let oui_entry = read_into_db(db_text);
         match oui_entry {
-            Ok(e) => { Ok(Oui {
+            Ok(e) => Ok(Oui {
                 db: e.0,
                 manufacturer_map: e.1,
                 manufacturers: e.2,
                 ouis: e.3,
                 records: e.4,
-            }) }
-            Err(e) => Err(format!("Error: {}", e))
+            }),
+            Err(e) => Err(format!("Error: {}", e)),
         }
     }
 
@@ -97,54 +88,54 @@ impl Oui {
         //! ```rust
         //! use mac_oui::Oui;
         //!
-        //! fn main () {
-        //!     let db = Oui::from_csv_file("assets/oui.csv");
-        //!     assert!(db.is_ok())
-        //! }
+        //! let db = Oui::from_csv_file("assets/oui.csv");
+        //! assert!(db.is_ok())
         //! ```
         let db_text = if let Ok(contents) = read_to_string(oui_csv.as_ref()) {
             contents
         } else {
-            return Err(
-                format!(
-                    "could not open database file - {}",
-                    oui_csv.as_ref().to_str().unwrap()
-                )
-            )
+            return Err(format!(
+                "could not open database file - {}",
+                oui_csv.as_ref().to_str().unwrap()
+            ));
         };
         let oui_entry = read_into_db(&db_text);
         match oui_entry {
-            Ok(e) => {
-                Ok(Oui {
-                    db: e.0,
-                    manufacturer_map: e.1,
-                    manufacturers: e.2,
-                    ouis: e.3,
-                    records: e.4,
-                })
-            }
-            Err(e) => Err(format!("Error: {}", e))
+            Ok(e) => Ok(Oui {
+                db: e.0,
+                manufacturer_map: e.1,
+                manufacturers: e.2,
+                ouis: e.3,
+                records: e.4,
+            }),
+            Err(e) => Err(format!("Error: {}", e)),
         }
     }
 
     pub fn lookup_by_mac(&self, mac_addr: &str) -> Result<Option<&Entry>, Error> {
         //! Lookup for a Manufacturer Name based upon
         //! the given MAC Address
-        let mac_addr = match MacAddress::parse_str(&mac_addr) {
+        let mac_addr = match MacAddress::parse_str(mac_addr) {
             Ok(m) => m,
-            Err(e) => return Err(e.to_string())
+            Err(e) => return Err(e.to_string()),
         };
         let mac_u = &mac_addr.to_u64();
         match mac_u {
-            Ok(m) => self.query(&m),
-            Err(e) => return Err(e.to_string())
+            Ok(m) => self.query(m),
+            Err(e) => Err(e.to_string()),
         }
     }
 
-    pub fn lookup_by_manufacturer(&self, manufacturer_name: &str) -> Result<Option<&Vec<Entry>>, Error> {
+    pub fn lookup_by_manufacturer(
+        &self,
+        manufacturer_name: &str,
+    ) -> Result<Option<&Vec<Entry>>, Error> {
         //! Lookup for the MAC Address Reference based
         //! upon the given Manufacturer Name
-        match self.manufacturer_map.get_vec(&manufacturer_name.to_string()) {
+        match self
+            .manufacturer_map
+            .get_vec(&manufacturer_name.to_string())
+        {
             Some(r) => Ok(Some(r)),
             _ => Ok(None),
         }
@@ -175,7 +166,7 @@ impl Oui {
 }
 
 trait MacAddrToU64 {
-    fn to_u64(&self)  -> Result<u64, Error>;
+    fn to_u64(&self) -> Result<u64, Error>;
 }
 
 impl MacAddrToU64 for MacAddress {
@@ -198,12 +189,10 @@ impl MacAddrToU64 for MacAddress {
         let mac_num = if let Ok(padded) = padded_mac.read_u64::<NetworkEndian>() {
             padded
         } else {
-            return Err(
-                format!(
-                    "could not read_u64 from padded MAC byte array: {:?}",
-                    padded_mac
-                )
-            )
+            return Err(format!(
+                "could not read_u64 from padded MAC byte array: {:?}",
+                padded_mac
+            ));
         };
         Ok(mac_num)
     }
@@ -215,7 +204,9 @@ fn csv_de(csv_text: &str) -> Result<Vec<Entry>, csv::Error> {
         .collect()
 }
 
-fn read_into_db(csv_text: &str) -> Result<(OuiMap, OuiMultiMap, HashSet<String>, HashSet<String>, i32), Error> {
+fn read_into_db(
+    csv_text: &str,
+) -> Result<(OuiMap, OuiMultiMap, HashSet<String>, HashSet<String>, i32), Error> {
     //! Reads the OUI CSV File into a Btree Map
     let mut oui_db = OuiMap::new();
     let mut manufacturer_map = OuiMultiMap::new();
@@ -225,10 +216,12 @@ fn read_into_db(csv_text: &str) -> Result<(OuiMap, OuiMultiMap, HashSet<String>,
 
     let records = match csv_de(csv_text) {
         Ok(r) => r,
-        Err(_e) => return Err(
-            String::from("CSV file is not matching OUI CSV, \
-            be sure to download here: https://macaddress.io/database-download/csv")
-        )
+        Err(_e) => {
+            return Err(String::from(
+                "CSV file is not matching OUI CSV, \
+            be sure to download here: https://macaddress.io/database-download/csv",
+            ))
+        }
     };
 
     // Loop thru
@@ -239,22 +232,18 @@ fn read_into_db(csv_text: &str) -> Result<(OuiMap, OuiMultiMap, HashSet<String>,
         match oui_mask.len() {
             1 => mask = 24,
             2 => {
-                mask = u8::from_str_radix(&oui_mask[1], 10).unwrap();
-                if !(mask >= 8 && mask <= 48) {
+                mask = oui_mask[1].parse::<u8>().unwrap();
+                if !(8..=48).contains(&mask) {
                     return Err(format!("incorrect mask value: {}", mask));
                 }
             }
-            _ => {
-                return Err(format!(
-                    "invalid number of mask separators: {:?}",
-                    oui_mask
-                ))
-            }
+            _ => return Err(format!("invalid number of mask separators: {:?}", oui_mask)),
         };
 
         // remove the separators from
         // the mac address string
-        let oui = record.oui
+        let oui = record
+            .oui
             .to_uppercase()
             .replace(":", "")
             .replace("-", "")
@@ -262,9 +251,7 @@ fn read_into_db(csv_text: &str) -> Result<(OuiMap, OuiMultiMap, HashSet<String>,
         let oui_int = if let Ok(oi) = u64::from_str_radix(&oui, 16) {
             oi
         } else {
-            return Err(
-                format!("could not parse OUI info, is this a oui csv file?")
-            )
+            return Err("could not parse OUI info, is this a oui csv file?".to_string());
         };
         // If it's a 24-bit mask, shift over as non-24
         let oui_start: u64;
@@ -285,7 +272,7 @@ fn read_into_db(csv_text: &str) -> Result<(OuiMap, OuiMultiMap, HashSet<String>,
             country_code: record.country_code,
             assignment_block_size: record.assignment_block_size,
             date_created: record.date_created,
-            date_updated: record.date_updated
+            date_updated: record.date_updated,
         };
         nr_records += 1;
         oui_db.insert(oui_start..=oui_end, data.clone());
@@ -294,7 +281,13 @@ fn read_into_db(csv_text: &str) -> Result<(OuiMap, OuiMultiMap, HashSet<String>,
         unique_ouis.insert(record.oui);
     }
 
-    Ok((oui_db, manufacturer_map, unique_manufacturers, unique_ouis, nr_records))
+    Ok((
+        oui_db,
+        manufacturer_map,
+        unique_manufacturers,
+        unique_ouis,
+        nr_records,
+    ))
 }
 
 #[cfg(test)]
@@ -331,7 +324,7 @@ mod tests {
                 Some(entries) => {
                     let ouis: Vec<String> = entries.iter().map(|e| e.oui.clone()).rev().collect();
                     return assert!(ouis.contains(&"70:B3:D5".to_string()));
-                },
+                }
                 _ => assert!(false),
             },
             _ => assert!(false),

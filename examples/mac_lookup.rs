@@ -1,8 +1,5 @@
 use mac_oui::Oui;
-use std::{
-    env,
-    process::exit
-};
+use std::{env, process::exit};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -27,7 +24,7 @@ fn main() {
             } else {
                 println!("No entry found for: {}", mac_addr)
             }
-        },
-        Err(e) => println!("Error: {}", e)
+        }
+        Err(e) => println!("Error: {}", e),
     }
 }
