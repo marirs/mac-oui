@@ -336,7 +336,7 @@ mod tests {
         let db = Oui::from_csv_file("assets/oui.csv").unwrap();
 
         let res = db.get_unique_manufacturers().unwrap();
-        assert_eq!(res.len(), 27617)
+        assert_eq!(res.len(), 28449)
     }
 
     #[test]
@@ -344,7 +344,7 @@ mod tests {
         let db = Oui::from_csv_file("assets/oui.csv").unwrap();
 
         let res = db.get_unique_ouis().unwrap();
-        assert_eq!(res.len(), 42554)
+        assert_eq!(res.len(), 45030)
     }
 
     #[test]
@@ -352,6 +352,6 @@ mod tests {
         let db = Oui::from_csv_file("assets/oui.csv").unwrap();
 
         let res = db.get_total_records();
-        assert_eq!(res, 42554)
+        assert_eq!(res, 45030)
     }
 }
