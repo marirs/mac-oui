@@ -21,7 +21,7 @@ edition = "2021"
 [dependencies]
 byteorder = "1"
 csv = "1"
-eui48 = "1"
+macaddr = "1.0"
 rangemap = "1.0.0"
 multimap = "0.8.3"
 serde = { version = "1", features = ["derive"] }
