@@ -1,5 +1,5 @@
 use byteorder::{NetworkEndian, ReadBytesExt};
-use eui48::MacAddress;
+use macaddr::MacAddr6 as MacAddress;
 use serde::{Deserialize, Deserializer, Serialize};
 use std::{collections::HashSet, fs::read_to_string, iter::FromIterator, path::Path};
 
@@ -115,7 +115,7 @@ impl Oui {
     pub fn lookup_by_mac(&self, mac_addr: &str) -> Result<Option<&Entry>, Error> {
         //! Lookup for a Manufacturer Name based upon
         //! the given MAC Address
-        let mac_addr = match MacAddress::parse_str(mac_addr) {
+        let mac_addr: MacAddress = match mac_addr.parse() {
             Ok(m) => m,
             Err(e) => return Err(e.to_string()),
         };
