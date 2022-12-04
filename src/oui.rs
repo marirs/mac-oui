@@ -56,6 +56,8 @@ impl Oui {
     #[cfg(feature = "with-db")]
     pub fn default() -> Result<Oui, Error> {
         //! Loads the default oui csv database
+        //! The default database is loaded from:
+        //! `https://macaddress.io/database-download/csv`
         //!
         //! ## Example
         //! ```rust
@@ -65,9 +67,7 @@ impl Oui {
         //! assert!(db.is_ok());
         //! ```
         let db_text = include_str!("../assets/oui.csv");
-
-        let oui_entry = read_into_db(db_text);
-        match oui_entry {
+        match read_into_db(db_text) {
             Ok(e) => Ok(Oui {
                 db: e.0,
                 manufacturer_map: e.1,
@@ -99,8 +99,7 @@ impl Oui {
                 oui_csv.as_ref().to_str().unwrap()
             ));
         };
-        let oui_entry = read_into_db(&db_text);
-        match oui_entry {
+        match read_into_db(&db_text) {
             Ok(e) => Ok(Oui {
                 db: e.0,
                 manufacturer_map: e.1,
@@ -204,6 +203,7 @@ fn csv_de(csv_text: &str) -> Result<Vec<Entry>, csv::Error> {
         .collect()
 }
 
+#[allow(clippy::type_complexity)]
 fn read_into_db(
     csv_text: &str,
 ) -> Result<(OuiMap, OuiMultiMap, HashSet<String>, HashSet<String>, i32), Error> {
@@ -242,24 +242,14 @@ fn read_into_db(
 
         // remove the separators from
         // the mac address string
-        let oui = record
-            .oui
-            .to_uppercase()
-            .replace(":", "")
-            .replace("-", "")
-            .replace(".", "");
+        let oui = record.oui.to_uppercase().replace([':', '-', '.'], "");
         let oui_int = if let Ok(oi) = u64::from_str_radix(&oui, 16) {
             oi
         } else {
             return Err("could not parse OUI info, is this a oui csv file?".to_string());
         };
         // If it's a 24-bit mask, shift over as non-24
-        let oui_start: u64;
-        if mask == 24 {
-            oui_start = oui_int << 24;
-        } else {
-            oui_start = oui_int
-        };
+        let oui_start: u64 = if mask == 24 { oui_int << 24 } else { oui_int };
         // Find the end of this OUI entry range
         let oui_end: u64 = oui_start | 0xFFFF_FFFF_FFFF >> mask;
 
