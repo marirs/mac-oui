@@ -28,13 +28,13 @@ cargo b --release
 You can include this in your Cargo.toml file:
 ```toml
 [dependencies]
-mac_oui = "0.4.5"
+mac_oui = "0.4.7"
 ```
 
 If you want to use it with the inbuilt oui db; then:
 ```toml
 [dependencies]
-mac_oui = { version = "0.4.5", features = ["with-db"] }
+mac_oui = { version = "0.4.7", features = ["with-db"] }
 ```
 
 and then
@@ -91,9 +91,9 @@ $ cargo run --example manufacturer_lookup --features="with-db" "Apple, Inc"
 $ cargo run --example --features="with-db" db_stats
     Finished dev [optimized + debuginfo] target(s) in 0.06s
      Running `target/debug/examples/db_stats`
-Total Records= 42554
-Total Manufacturers= 27617
-Total MAC Addrs= 42554
+Total Records= 47880
+Total Manufacturers= 29491
+Total MAC Addrs= 47880
 
 ====Manufacturers====
 [
