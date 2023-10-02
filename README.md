@@ -28,13 +28,13 @@ cargo b --release
 You can include this in your Cargo.toml file:
 ```toml
 [dependencies]
-mac_oui = "0.4.7"
+mac_oui = "0.4.8"
 ```
 
 If you want to use it with the inbuilt oui db; then:
 ```toml
 [dependencies]
-mac_oui = { version = "0.4.7", features = ["with-db"] }
+mac_oui = { version = "0.4.8", features = ["with-db"] }
 ```
 
 and then
