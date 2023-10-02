@@ -173,7 +173,7 @@ impl MacAddrToU64 for MacAddress {
         //! Converts a MAC Address to a u64 value
         let mac_bytes = self.as_bytes();
 
-        let padded = vec![
+        let padded = [
             0,
             0,
             mac_bytes[0],
@@ -326,7 +326,7 @@ mod tests {
         let db = Oui::from_csv_file("assets/oui.csv").unwrap();
 
         let res = db.get_unique_manufacturers().unwrap();
-        assert_eq!(res.len(), 29491)
+        assert_eq!(res.len(), 29988)
     }
 
     #[test]
@@ -334,7 +334,7 @@ mod tests {
         let db = Oui::from_csv_file("assets/oui.csv").unwrap();
 
         let res = db.get_unique_ouis().unwrap();
-        assert_eq!(res.len(), 47880)
+        assert_eq!(res.len(), 49184)
     }
 
     #[test]
@@ -342,6 +342,6 @@ mod tests {
         let db = Oui::from_csv_file("assets/oui.csv").unwrap();
 
         let res = db.get_total_records();
-        assert_eq!(res, 47880)
+        assert_eq!(res, 49184)
     }
 }

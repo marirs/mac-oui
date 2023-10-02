@@ -1,6 +1,6 @@
 [package]
 name = "mac_oui"
-version = "0.4.7"
+version = "0.4.8"
 description = "Lookup for MAC Address vendor details"
 authors = ["Marirs <marirs@gmail.com>"]
 keywords = [
@@ -23,7 +23,7 @@ byteorder = "1"
 csv = "1"
 macaddr = "1.0"
 rangemap = "1.1.0"
-multimap = "0.8.3"
+multimap = "0.9.0"
 serde = { version = "1", features = ["derive"] }
 
 [lib]
