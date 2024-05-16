@@ -11,7 +11,7 @@ Lookup the MAC Address for a corresponding details (eg: org, created, etc...)
 
 ## Requirements
 
-- Rust 1.60+ (edition 2021)
+- Rust 1.70+ (edition 2021)
 
 ## Compile
 - Dev
@@ -28,13 +28,13 @@ cargo b --release
 You can include this in your Cargo.toml file:
 ```toml
 [dependencies]
-mac_oui = "0.4.8"
+mac_oui = "0.4.10"
 ```
 
 If you want to use it with the inbuilt oui db; then:
 ```toml
 [dependencies]
-mac_oui = { version = "0.4.8", features = ["with-db"] }
+mac_oui = { version = "0.4.10", features = ["with-db"] }
 ```
 
 and then
@@ -52,7 +52,7 @@ fn main () {
 You can run the default example that is included in the following manner.
 - `cargo run --example mac_lookup <mac address>` eg:
 ```bash
-cargo run --example mac_lookup --features="with-db" 70:B3:D5:e7:4f:81
+cargo run --features="with-db" --example mac_lookup '70:B3:D5:e7:4f:81'
     Finished dev [optimized + debuginfo] target(s) in 1.54s
      Running `target/debug/examples/mac_lookup '70:B3:D5:e7:4f:81'`
 Entry {
@@ -68,7 +68,7 @@ Entry {
 ```
 - Example of lookup by Manufacturer
 ```bash
-$ cargo run --example manufacturer_lookup --features="with-db" "Apple, Inc"
+$ cargo run --features="with-db" --example manufacturer_lookup "Apple, Inc"
     Finished dev [optimized + debuginfo] target(s) in 0.02s
      Running `target/debug/examples/manufacturer_lookup 'Apple, Inc'`
 [
@@ -88,12 +88,12 @@ $ cargo run --example manufacturer_lookup --features="with-db" "Apple, Inc"
 
 - Example Getting a list of Manufacturers
 ```bash
-$ cargo run --example --features="with-db" db_stats
+$ cargo run --features="with-db" --example db_stats
     Finished dev [optimized + debuginfo] target(s) in 0.06s
      Running `target/debug/examples/db_stats`
-Total Records= 47880
-Total Manufacturers= 29491
-Total MAC Addrs= 47880
+Total Records= 51615
+Total Manufacturers= 30840
+Total MAC Addrs= 51615
 
 ====Manufacturers====
 [
@@ -132,14 +132,14 @@ Total MAC Addrs= 47880
     "zte Corp",
     "zhejiang yuanwang communication technolgy Co, Ltd",
     "zhejiang ebang communication Co, Ltd",
+    "zhejiang Dusun Electron Co, Ltd",
+    "zhejiang Anhong Tech Co, Ltd",
     "z-max mediasolution",
     "yLez Tech Pte Ltd",
     "xxter b.v.",
     "xvtec Ltd",
     "xn systems",
     "xmi systems",
-    "xm",
-    "xiamenshi c-chip Tech Co, Ltd",
 ]
 ```
 ---
